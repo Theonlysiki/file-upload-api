@@ -8,8 +8,7 @@ const s3 = new AWS.S3({
   region: process.env.AWS_REGION
 });
 
-const storage = multer.memoryStorage(); // Don't save locally, we are going to stream it to S3 directly
-
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 exports.uploadFile = (req, res) => {
@@ -23,7 +22,7 @@ exports.uploadFile = (req, res) => {
       Key: `${Date.now()}-${file.originalname}`,
       Body: file.buffer,
       ContentType: file.mimetype,
-      ACL: 'public-read' // Make file publicly accessible
+      ACL: 'public-read'
     };
     
     try {
@@ -34,8 +33,8 @@ exports.uploadFile = (req, res) => {
         mimetype: file.mimetype,
         url: uploaded.Location
       });
-      await newFile.save();
       
+      await newFile.save();
       res.status(201).json(newFile);
     } catch (error) {
       res.status(500).send(error);
